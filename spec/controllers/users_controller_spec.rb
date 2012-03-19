@@ -128,7 +128,7 @@ describe UsersController do
       response.should have_selector('title', :content => "Edit user")
     end
 
-    it "should have a link to change the gravatar" do
+    it "should have a link to change the Gravatar" do
       get :edit, :id => @user
       response.should have_selector('a', :href => 'http://gravatar.com/emails',
                                          :content => 'change')
@@ -177,8 +177,25 @@ describe UsersController do
 
       it "should have a flash message" do
         put :update, :id => @user, :user => @attr
-        flash[:success].should =~ /updated/
+        flash[:success].should =~ /updated/i
       end
+    end
+  end
+
+  describe "authentication of edit/update actions" do
+    before(:each) do
+      @user = Factory(:user)
+    end
+
+    it "should deny access to 'edit'" do
+      get :edit, :id => @user
+      response.should redirect_to(signin_path)
+    end
+
+    it "should deny access to 'update'" do
+      put :update, :id => @user, :user => {}
+      response.should redirect_to(signin_path)
+      flash[:notice].should =~ /sign in/i
     end
   end
 end
