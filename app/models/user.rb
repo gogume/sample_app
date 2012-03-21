@@ -8,8 +8,7 @@ class User < ActiveRecord::Base
   has_many :reverse_relationships, :dependent => :destroy,
                                    :foreign_key => "followed_id",
                                    :class_name => "Relationship"
-  has_many :following, :through => :relationships,
-                       :source => :followed
+  has_many :following, :through => :relationships, :source => :followed
   has_many :followers, :through => :reverse_relationships,
                        :source => :follower
 
@@ -31,7 +30,7 @@ class User < ActiveRecord::Base
   end
 
   def feed
-    Micropost.where("user_id = ?", id)
+    Micropost.from_users_followed_by(self)
   end
 
   def following?(followed)
